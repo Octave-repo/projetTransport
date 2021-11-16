@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<reseau>
+    <stations>Syen Gare Piscine Avlon Mairie Ecole</stations>
+    <lignes>
+        <ligne>1
+            <stations>Syen Mairie Ecole Piscine Avlon</stations>
+            <heures-passage>0730 0751 0754 0805</heures-passage>
+            <heures-passage>0735 0756 0759 0810</heures-passage>
+            <heures-passage>0830 0851 0854 0905</heures-passage>
+            <heures-passage>1635 1656 1659 1710</heures-passage>
+            <heures-passage>1645 1706 1709 1720</heures-passage>
+        </ligne>
+    </lignes>
+</reseau>

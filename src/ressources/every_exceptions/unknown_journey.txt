@@ -1,0 +1,8 @@
+Limo        Syen        35
+Syen        Singha      30
+%Aucun chemin directe entre Limo et Singha au défini
+//
+Limo		Syen		0950
+Syen		Singha		0850
+%Il n y a pas de chemin directe en Limo et Sigha
+Limo        Singha      0930

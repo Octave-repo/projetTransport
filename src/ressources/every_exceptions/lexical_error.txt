@@ -1,0 +1,11 @@
+%On utilise le format du metro
+A B C D
+
+A B 4
+B C 6
+C D 5
+
+0700
+%L'erreur est le fait que nous avons un O au lieu d'un 0
+1O
+2300

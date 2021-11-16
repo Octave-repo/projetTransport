@@ -1,0 +1,6 @@
+Limo        Syen        35
+Syen        Singha      30
+//
+%970 n'est pas un format heure correcte
+Limo		Syen		0970
+Syen		Singha		0850

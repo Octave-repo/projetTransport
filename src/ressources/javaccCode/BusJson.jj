@@ -1,0 +1,93 @@
+PARSER_BEGIN(BusJson)
+public class BusJson {
+  public static BusDTO data;
+}
+
+PARSER_END(BusJson)
+
+SKIP :{
+    <(["\t", "\n", "\r", " "])+>
+}
+
+TOKEN :{
+    <OPENING_BRACE : "{">
+  | <CLOSING_BRACE: "}">
+  | <OPENING_BRACKET: "[">
+  | <CLOSING_BRACKET: "]">
+  | <COMMA : ",">
+  | <LIGNE : "\"ligne\""(["\t", "\n", "\r", " "])*":">
+  | <HORAIRES: "\"horaires\""(["\t", "\n", "\r", " "])*":">
+  | <DIRECTION: "\"direction\""(["\t", "\n", "\r", " "])*":">
+  | <STATIONS : "\"stations\""(["\t", "\n", "\r", " "])*":">
+  | <STATION: "\"station\""(["\t", "\n", "\r", " "])*":">
+  | <PASSAGES: "\"passages\""(["\t", "\n", "\r", " "])*":">
+  | <WORD: (["\""])(["a"-"z","A"-"Z"])+(["\""])>
+  | <TIME: (["\""])(["0"-"9"])+(["\""])>
+
+}
+
+void input():
+{
+    Token l;
+}
+{
+    <OPENING_BRACE> <LIGNE> l=<WORD> {data = new BusDTO(l.toString());} <COMMA> <HORAIRES> <OPENING_BRACKET> horaires() <CLOSING_BRACE> <EOF>
+}
+
+void horaires():
+{
+    Token d;
+    BusHoraire bh;
+}
+{
+    <OPENING_BRACE> <DIRECTION> d=<WORD> {bh=data.addHoraire(d.toString());} <COMMA> <STATIONS> <OPENING_BRACKET> stations(bh) <COMMA> <PASSAGES> <OPENING_BRACKET> passage(bh) <CLOSING_BRACE> horairesComma()
+}
+
+void horairesComma():
+{}
+{
+    <CLOSING_BRACKET>
+    | horaires() <CLOSING_BRACKET>
+    | <COMMA> horaires()
+}
+
+void stations(BusHoraire bh):
+{
+    Token s;
+}
+{
+    <OPENING_BRACE> <STATION> s=<WORD> {bh.addStation(s.toString());} <CLOSING_BRACE> stationsComma(bh)
+}
+
+void stationsComma(BusHoraire bh):
+{}
+{
+    {bh.checkStationIntegrity();}<CLOSING_BRACKET>
+    | stations(bh) <CLOSING_BRACKET>
+    | <COMMA> stations(bh)
+}
+
+void passage(BusHoraire bh):
+{}
+{
+    integerList(0, bh) passageComma(bh)
+}
+
+void passageComma(BusHoraire bh):
+{}
+{
+    <CLOSING_BRACKET>
+    | passage(bh) <CLOSING_BRACKET>
+    | <COMMA> passage(bh)
+}
+
+void integerList(int index, BusHoraire bh):
+{
+    Token t;
+}
+{
+    LOOKAHEAD(2)
+    t=<TIME> {bh.addTimeAtIndex(index, t.toString());bh.checkTimeIntegrity(index);} <CLOSING_BRACKET>
+    | t=<TIME> {bh.addTimeAtIndex(index, t.toString());} <COMMA> integerList(index+1, bh)
+    | <OPENING_BRACKET> integerList(index, bh)
+}

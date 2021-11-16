@@ -1,0 +1,5 @@
+% Dans le cas d'un fichier:
+%   vide, ne contenant que des espaces/tabulation/retour à la ligne
+%   ou ne contenant que des commentaires
+%   il est impossible de déterminer si il s'agit d'un métro ou d'un car
+% (c'est donc peu probable)

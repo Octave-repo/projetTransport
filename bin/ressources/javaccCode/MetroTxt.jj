@@ -1,0 +1,61 @@
+PARSER_BEGIN(MetroTxt)
+public class MetroTxt {
+  public static MetroDTO data;
+}
+
+PARSER_END(MetroTxt)
+
+SKIP : {
+  < "%"(~["\r", "\n"])*"\n" >
+  | <(["\t", "\r", " "])+>
+}
+
+TOKEN :{
+  <WORD: (["a"-"z","A"-"Z"])+>
+  |<TIME: (["0"-"9"])+>
+  |<NEW_LINE: "\n">
+}
+/** Root */
+void input() :
+{data = new MetroDTO();}
+{
+  stations() <NEW_LINE> temps() timing() flex()
+}
+
+void stations() :
+{
+  Token t;
+}
+{
+  LOOKAHEAD(2)
+  t=<WORD> {data.addStation(t.toString());} stations()
+  |t=<WORD> <NEW_LINE> {data.addStation(t.toString());}
+}
+
+void temps() :
+{
+  Token d;
+  Token a;
+  Token t;
+}
+{
+  d=<WORD> a=<WORD> t=<TIME> <NEW_LINE> {data.addLiasion(d.toString(), a.toString(), Integer.parseInt(t.toString()));} temps()
+  |<NEW_LINE>
+}
+
+void timing() :
+{
+  Token p;
+  Token d;
+  Token i;
+}
+{
+  p=<TIME> <NEW_LINE> i=<TIME> <NEW_LINE> d=<TIME> {data.setTimes(p.toString(),d.toString(), i.toString());}
+}
+
+void flex():
+{}
+{
+  <NEW_LINE> flex()
+  | <EOF>
+}

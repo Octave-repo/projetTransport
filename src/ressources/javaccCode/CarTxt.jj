@@ -1,0 +1,71 @@
+PARSER_BEGIN(CarTxt)
+public class CarTxt {
+  public static CarDTO data;
+}
+
+PARSER_END(CarTxt)
+
+SKIP : {
+  < "%"(~["\r", "\n"])*"\n" >
+  | <(["\t", "\r", " "])+>
+}
+
+TOKEN :{
+  <WORD: (["a"-"z","A"-"Z"])+>
+  |<TIME: (["0"-"9"])+>
+  |<NEW_LINE: "\n">
+}
+
+void input() :
+{
+  data = new CarDTO();
+}
+{
+  suiteLigneOne() suiteLigneTwo()
+}
+
+void suiteLigneOne() :
+{
+  CarLigne cl;
+}
+{
+  cl=ligneLigne() {data.addLigne(cl.gareDepart, cl.gareArrive, cl.temps.toString());} suiteLigneOne()
+  | "//"
+}
+void suiteLigneTwo() :
+{
+  CarLigne cl;
+}
+{
+  LOOKAHEAD(2)
+  <NEW_LINE> cl=ligneHoraire() {data.addHoraire(cl.gareDepart, cl.gareArrive, cl.temps.toString());} suiteLigneTwo()
+  | flex()
+}
+
+CarLigne ligneLigne():
+{
+  Token d;
+  Token a;
+  Token t;
+  }
+{
+  d=<WORD> a=<WORD> t=<TIME> <NEW_LINE> {return new CarLigne(d.toString(), a.toString(), t.toString());}
+}
+
+CarLigne ligneHoraire():
+{
+  Token d;
+  Token a;
+  Token t;
+}
+{
+  d=<WORD> a=<WORD> t=<TIME> {return new CarLigne(d.toString(), a.toString(), t.toString());}
+}
+
+
+void flex():
+{}
+{
+  <NEW_LINE> flex()
+  | <EOF> 
+}

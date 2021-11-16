@@ -1,0 +1,60 @@
+PARSER_BEGIN(TrainXml)
+public class TrainXml {
+    public static TrainDTO data;
+}
+
+PARSER_END(TrainXml)
+
+SKIP : {
+  <"<?xml version='1.0' encoding='UTF-8' ?>\n">
+  | <(["\t", "\n", "\r", " "])+>
+}
+
+TOKEN :{
+  <WORD: (["a"-"z","A"-"Z"])+>
+  |<INTEGER: (["0"-"9"])+>
+  |<HORAIRES: "<horaires>">
+  |<LIGNE : "<line>">
+  |<JUNCTION: "<junction>">
+  |<START_STATION : "<start-station>">
+  |<ARRIVAL_STATION: "<arrival-station>">
+  |<START_HOUR: "<start-hour>">
+  |<ARRIVAL_HOUR: "<arrival-hour>">
+  |<HORAIRES_CLOSE: "</horaires>">
+  |<LIGNE_CLOSE : "</line>">
+  |<JUNCTION_ClOSE: "</junction>">
+  |<START_STATION_CLOSE : "</start-station>">
+  |<ARRIVAL_STATION_CLOSE: "</arrival-station>">
+  |<START_HOUR_CLOSE: "</start-hour>">
+  |<ARRIVAL_HOUR_CLOSE:"</arrival-hour>">
+}
+/** Root */
+void input() :
+{
+    data = new TrainDTO();
+}
+{
+    <HORAIRES> ligne() <EOF>
+}
+
+void ligne():
+{
+    Token id;
+}
+{
+    <HORAIRES_CLOSE>
+    | <LIGNE> id=<INTEGER> {TrainLigne tLigne = data.addLigne(id.toString());} junctions(tLigne) ligne() 
+}
+
+void junctions(TrainLigne tLigne):
+{
+    Token gd;
+    Token ga;
+    Token hd;
+    Token ha;
+}
+{
+    <LIGNE_CLOSE>
+    | <JUNCTION> <START_STATION> gd=<WORD> <START_STATION_CLOSE> <ARRIVAL_STATION> ga=<WORD> <ARRIVAL_STATION_CLOSE> <START_HOUR> hd=<INTEGER> <START_HOUR_CLOSE> <ARRIVAL_HOUR> ha=<INTEGER> <ARRIVAL_HOUR_CLOSE> <JUNCTION_ClOSE> junctions(tLigne)
+        {tLigne.addJonction(gd.toString(), ga.toString(), hd.toString(), ha.toString());}
+}   

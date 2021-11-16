@@ -1,0 +1,11 @@
+%On utilise le format du metro
+A B C D
+
+A B 4
+B C 6
+C D 5
+
+0700
+%Ici l'erreur viens du fait qu'on utilise pas une valeur alphanumérique
+1$
+2300

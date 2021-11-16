@@ -1,0 +1,75 @@
+PARSER_BEGIN(TramXml)
+import java.util.ArrayList;
+
+public class TramXml {
+    public static TramDTO data;
+}
+
+PARSER_END(TramXml)
+
+SKIP : {
+  <"<?xml version='1.0' encoding='UTF-8' ?>\n">
+  | <(["\t", "\n", "\r", " "])+>
+}
+
+TOKEN :{
+  <WORD: (["a"-"z","A"-"Z"])+>
+  |<INTEGER: (["0"-"9"])+>
+  |<RESAU: "<reseau>">
+  |<LIGNES: "<lignes>">
+  |<LIGNE: "<ligne>">
+  |<STATIONS: "<stations>">
+  |<HEURES_PASSAGE: "<heures-passage>">
+  |<RESAU_CLOSE: "</reseau>">
+  |<LIGNES_CLOSE: "</lignes>">
+  |<LIGNE_CLOSE: "</ligne>">
+  |<STATIONS_CLOSE: "</stations>">
+  |<HEURES_PASSAGE_CLOSE: "</heures-passage>">
+}
+
+void input():
+{
+    data = new TramDTO();
+}
+{
+    <RESAU> <STATIONS> stationsListe() <LIGNES> ligne()  <RESAU_CLOSE> <EOF>
+}
+
+
+void ligne():
+{
+    Token id;
+}
+{
+    <LIGNES_CLOSE>
+    | <LIGNE> id=<INTEGER> {TramLigne tl =  data.addLigne(id.toString());} <STATIONS> stations(tl) heures(tl, 0) ligne()
+}
+
+void heures(TramLigne tl, int i):
+{
+    Token h;
+}
+{
+    <LIGNE_CLOSE>
+    | <HEURES_PASSAGE_CLOSE> {tl.checkValidity(i);} heures(tl, 0)
+    | h=<INTEGER> {tl.addHeureAtIndex(i, h.toString());} heures(tl, i+1)
+    | <HEURES_PASSAGE> h=<INTEGER> {tl.addHeureAtIndex(i, h.toString());} heures(tl, i+1)
+}
+
+void stations(TramLigne tl):
+{
+    Token s;
+}
+{
+    <STATIONS_CLOSE>
+    | s=<WORD> {tl.addStation(s.toString());} stations(tl)
+}
+
+void stationsListe():
+{
+    Token s;
+}
+{
+    <STATIONS_CLOSE>
+    | s=<WORD> {data.addStation(s.toString());} stationsListe()
+}

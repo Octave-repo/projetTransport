@@ -1,0 +1,5 @@
+Limo        Syen        35
+Syen        Singha      30
+//
+Limo		Syen		0950
+Syen		Singha		0850
